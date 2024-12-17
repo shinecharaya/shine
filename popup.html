@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Website Link Checker, Meta Info, Robots.txt & Image Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 600px;
+      padding: 10px;
+    }
+    /* Tab styling */
+    .tab {
+      overflow: hidden;
+      border-bottom: 1px solid #ccc;
+    }
+    .tab button {
+      background-color: inherit;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 20px;
+      transition: background-color 0.3s;
+      font-size: 16px;
+    }
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    .tab button.active {
+      background-color: #ccc;
+    }
+    /* Tab content */
+    .tabcontent {
+      display: none;
+      padding: 10px 0;
+    }
+    .tabcontent.active {
+      display: block;
+    }
+    /* Button styling */
+    button.action-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      width: 100%;
+      font-size: 16px;
+      border-radius: 4px;
+    }
+    button.action-btn:hover {
+      background-color: #45a049;
+    }
+    /* Results styling */
+    #linkResults, #metaResults, #robotsResults, #imageResults, #keywordResults {
+      margin-top: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .link-item, .meta-item, .robots-item, .image-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    .link-item a {
+      text-decoration: none;
+      color: #0066cc;
+      word-break: break-all;
+    }
+    .status-ok {
+      color: green;
+      font-weight: bold;
+    }
+    .status-broken {
+      color: red;
+      font-weight: bold;
+    }
+    .status-unknown {
+      color: orange;
+      font-weight: bold;
+    }
+    /* Meta info styling */
+    .meta-info {
+      padding: 5px 0;
+    }
+    .meta-info span {
+      font-weight: bold;
+    }
+    .meta-char-count {
+      margin-left: 10px;
+      font-size: 14px;
+    }
+    .char-count-normal {
+      color: green;
+    }
+    .char-count-warning {
+      color: orange;
+    }
+    .char-count-danger {
+      color: red;
+    }
+    /* Robots.txt styling */
+    .robots-content {
+      white-space: pre-wrap;
+      background-color: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 14px;
+    }
+    /* Image Analyzer styling */
+    .image-item {
+      flex-direction: column;
+      align-items: flex-start;
+      border-bottom: none;
+      padding-bottom: 15px;
+    }
+    .image-preview {
+      width: 100px;
+      height: auto;
+      object-fit: cover;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 5px;
+    }
+    .image-details {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 5px;
+      width: 100%;
+    }
+    .image-details span {
+      font-weight: bold;
+    }
+    .download-btn {
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 4px;
+      align-self: flex-start;
+    }
+    .download-btn:hover {
+      background-color: #007B9E;
+    }
+    /* Keyword Analyzer styling */
+    .keyword-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .keyword-table th, .keyword-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .keyword-table th {
+      background-color: #f2f2f2;
+    }
+    /* Color Codes styling */
+    .color-sample {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      vertical-align: middle;
+    }
+    /* Loader styling */
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 2s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h3>Website Link Checker, Meta Info, Robots.txt & Image Analyzer</h3>
+
+  <!-- Tab buttons -->
+  <div class="tab">
+    <button class="tablinks active" data-tab="linkChecker">Link Checker</button>
+    <button class="tablinks" data-tab="metaInfo">Meta Info</button>
+    <button class="tablinks" data-tab="robotsChecker">Robots.txt</button>
+    <button class="tablinks" data-tab="imageAnalyzer">Image Analyzer</button>
+    <button class="tablinks" data-tab="keywordAnalyzer">Keyword Analyzer</button>
+  </div>
+
+  <!-- Link Checker Tab Content -->
+  <div id="linkChecker" class="tabcontent active">
+    <button id="checkLinksBtn" class="action-btn">Check Links</button>
+    <div id="linkResults"></div>
+  </div>
+
+  <!-- Meta Info Tab Content -->
+  <div id="metaInfo" class="tabcontent">
+    <button id="getMetaBtn" class="action-btn">Get Meta Info</button>
+    <div id="metaResults"></div>
+  </div>
+
+  <!-- Robots.txt Checker Tab Content -->
+  <div id="robotsChecker" class="tabcontent">
+    <button id="checkRobotsBtn" class="action-btn">Check robots.txt</button>
+    <div id="robotsResults"></div>
+  </div>
+
+  <!-- Image Analyzer Tab Content -->
+  <div id="imageAnalyzer" class="tabcontent">
+    <button id="analyzeImagesBtn" class="action-btn">Analyze Images</button>
+    <div id="imageResults"></div>
+  </div>
+
+  <!-- Keyword Analyzer Tab Content -->
+  <div id="keywordAnalyzer" class="tabcontent">
+    <button id="analyzeKeywordsBtn" class="action-btn">Analyze Keywords</button>
+    <div id="keywordResults"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
